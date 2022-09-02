@@ -3,6 +3,8 @@ from urllib import response
 import requests
 import json
 from csv import writer
+import urllib3
+http = urllib3.PoolManager()
 
 def appendRow(row): # Append data as a new row
     with open('database.csv', 'a+', newline='') as write_obj:
@@ -10,9 +12,9 @@ def appendRow(row): # Append data as a new row
         csv_writer.writerow(row)
 
 def getData(): # Get color from sensor 10
-    responseAPI = requests.get('http://localhost/tss/0/sensor/10')
-
-    data = responseAPI.text
+    responseAPI = http.request("GET",
+                              f"http://localhost/tss/0/sensor/10")
+    data    = responseAPI.data.decode("utf-8")
     parseJson = json.loads(data)
 
     # Get color
@@ -37,3 +39,4 @@ def getData(): # Get color from sensor 10
     newData = [year, month, day, hour, min, sec, section, color]
     appendRow(newData)
 
+    return color
