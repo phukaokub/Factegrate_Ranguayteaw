@@ -1,11 +1,14 @@
 from datetime import datetime
 import time
 import datetime
+from turtle import color
 import sim
 from urllib import response
 import requests
 import json
 import generateDB
+import urllib3
+http    = urllib3.PoolManager()
 delay = 0
 
 def transferData(color) : # transfer data in API to CoppeliaSim
@@ -35,22 +38,26 @@ def getColorNewBox() : # Get color from Sensor #10
 
 def getDataFromAPI(num) : # Get position previous Box by Sensor #num
     global delay
-    responseAPI = requests.get(f'http://localhost/tss/0/sensor/{num}')
+    responseAPI = http.request("GET",
+                                f"http://localhost/tss/0/sensor/{num}")
     #print(response_API.status_code)
 
-    data = responseAPI.text
+    data    = responseAPI.data.decode("utf-8")
     parseJson = json.loads(data)
 
     activeCase =  parseJson['value']
-    print(f'Sensor #{num} : {activeCase}')
     
     if(activeCase == 1) : # If sensor detected --> insert new box
-        #getColorNewBox()
-        generateDB.getData()
-        delay = 1.055
+        # getColorNewBox()
+        # generateDB.getData()
+
+        print('Delay : ',delay)
+        print(f'Sensor #{num} : {activeCase}')
+        print('Finish!')
+        delay = 0.5
     else :
-        delay = 0
-    #pytime.sleep(1)
+        delay = 0.5
+    # pytime.sleep(1)
 
 def getLatency(): # Check latency between API and TeleSort
     global delay
@@ -64,6 +71,13 @@ def getLatency(): # Check latency between API and TeleSort
     unit = parseJson['unit']
     print(f'Latency = {latency} {unit}')
 
+def Actuator(color): #send actuator an act
+    print()
+
+
+
+
+
 while(True):
     #now = datetime.datetime.now()
     getDataFromAPI(0)
@@ -71,6 +85,6 @@ while(True):
     #usedTime = datetime.datetime.now() - now
     time.sleep(delay)
     #print('Time : ',usedTime)
-    print('Delay : ',delay)
-    print('Finish!')
+    # print('Delay : ',delay)
+    # print('Finish!')
 
