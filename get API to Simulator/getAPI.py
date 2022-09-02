@@ -1,5 +1,6 @@
 from datetime import datetime
 import time
+from time import sleep
 import datetime
 from turtle import color
 import sim
@@ -7,9 +8,11 @@ from urllib import response
 import requests
 import json
 import generateDB
+import PostActuator
 import urllib3
 http    = urllib3.PoolManager()
-delay = 0.5
+delay = 0
+global num
 color = ""
 
 def transferData(color) : # transfer data in API to CoppeliaSim
@@ -23,16 +26,16 @@ def transferData(color) : # transfer data in API to CoppeliaSim
 
 def getColorNewBox() : # Get color from Sensor #10
     global delay
-    responseAPI = requests.get('http://localhost/tss/0/sensor/10')
-    #print(response_API.status_code)
+    responseAPI = http.request("GET",
+                              "http://localhost/tss/0/sensor/10")
+    color    = responseAPI.data.decode("utf-8")
+    parseJson = json.loads(color)
 
-    data = responseAPI.text
-    parseJson = json.loads(data)
-
-    activeCase =  parseJson['value']
-    delay = 1.055
-    transferData(activeCase)
-    print('Color : ',activeCase)
+    # activeCase =  parseJson['value']
+    # delay = 1.055
+    # transferData(activeCase)
+    #print('Color : ',activeCase)
+    return color
 
 def getDataFromAPI(num) : # Get position previous Box by Sensor #num
     global delay, color
@@ -44,20 +47,27 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
     activeCase =  parseJson['value']
     
     if(activeCase == 1) : # If sensor detected --> insert new box
-        color = generateDB.getData()
-
+        # color = generateDB.getData()
+        color = getColorNewBox()
         #transferData(color)
 
         print(f'Delay : {delay}')
         print(f'Sensor #{num} : {activeCase}')
-        print(f'Color : {activeCase}')
-        print('Finish!')
-    # pytime.sleep(1)
+        print(f'Color : {color}')
+
+        getLatency()
+        PostActuator.ActuatorByColor(color)
+        getLatency()
+
+        print('Finish!\n')
+        # time.sleep(0.5)
+
+    # time.sleep(1)
 
 def getLatency(): # Check latency between API and TeleSort
     global delay
     responseAPI = http.request("GET",
-                              f"http://localhost/tss/0/sensor/{num}")
+                              f"http://localhost/tss/0/latency")
     data    = responseAPI.data.decode("utf-8")
     parseJson = json.loads(data)
 
@@ -66,6 +76,7 @@ def getLatency(): # Check latency between API and TeleSort
     print(f'Latency = {latency} {unit}')
 
 while(True):
+    # print('Scanning...')
     getDataFromAPI(0)
-    time.sleep(delay)
+    # time.sleep(delay)
 

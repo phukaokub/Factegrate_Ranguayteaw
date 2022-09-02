@@ -19,18 +19,18 @@ def getData(): # Get color from sensor 10
 
     # Get color
     color =  parseJson['value']
-    print(f'Color : {color}')
+    #print(f'Color : {color}')
 
     # Get date & time
     now = datetime.now()
     year = now.date().year
     month = now.date().month
     day = now.date().day
-    print(f'Date : {year} {month} {day}')
+    #print(f'Date : {year} {month} {day}')
     hour = now.time().hour
     min = now.time().minute
     sec = now.time().second
-    print(f'Time : {hour} {min} {sec}') 
+    #print(f'Time : {hour} {min} {sec}') 
 
     # Get factory section
     section = 'Noodle Sorting'
