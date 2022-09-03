@@ -15,6 +15,7 @@ delay = 0
 global num
 global color 
 color = ""
+i = 0
 
 def transferData(color) : # transfer data in API to CoppeliaSim
     sim.simxFinish(-1)
@@ -39,8 +40,7 @@ def getColorNewBox() : # Get color from Sensor #10
     return color
 
 def getDataFromAPI(num) : # Get position previous Box by Sensor #num
-    i=i%2
-    global delay, color
+    global delay, color, i
     responseAPI = http.request("GET",
                               f"http://localhost/tss/0/sensor/{num}")
     data    = responseAPI.data.decode("utf-8")
@@ -66,8 +66,9 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
         time.sleep(0.5)
     if(i==1):
         PostActuator.ActuatorGet()
+        i=0
     i+=1
-    time.sleep(1)
+    time.sleep(0.5)
 
 def getLatency(): # Check latency between API and TeleSort
     global delay
