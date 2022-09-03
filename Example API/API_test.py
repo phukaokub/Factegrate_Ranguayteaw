@@ -7,15 +7,14 @@ import urllib3
 '''
 
 http    = urllib3.PoolManager()
-
-for t in range(3):
-
+for t in range(1):
+    print("start")
     # Activate
     data_json   = {"action" : 1}
     data_encode = json.dumps(data_json).encode("utf-8")
     
     res = http.request("POST",
-                        "http://localhost/tss/0/actuator/0",
+                        "http://localhost/tss/0/actuator/1",
                         body=data_encode,
                         headers={"Content-Type" : "application/json"})
     
@@ -29,7 +28,7 @@ for t in range(3):
     data_encode = json.dumps(data_json).encode("utf-8")
     
     res = http.request("POST",
-                        "http://localhost/tss/0/actuator/0",
+                        "http://localhost/tss/0/actuator/1",
                         body=data_encode,
                         headers={"Content-Type" : "application/json"})
     
@@ -44,12 +43,12 @@ for t in range(3):
 
 http    = urllib3.PoolManager()
 
-for t in range(100):
+# for t in range(100):
 
-    res = http.request( "GET",
-                        "http://localhost/tss/0/sensor/0"
-                        )
-    text    = res.data.decode("utf-8")
-    print(text)
+#     res = http.request( "GET",
+#                         "http://localhost/tss/0/sensor/0"
+#                         )
+#     text    = res.data.decode("utf-8")
+#     print(text)
 
-    sleep(0.1)
+#     sleep(0.1)

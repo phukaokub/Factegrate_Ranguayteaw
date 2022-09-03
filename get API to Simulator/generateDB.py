@@ -34,9 +34,29 @@ def getData(): # Get color from sensor 10
 
     # Get factory section
     section = 'Noodle Sorting'
+    status = 'Unsort'
 
     # Update new data to the next row
-    newData = [year, month, day, hour, min, sec, section, color]
+    newData = [year, month, day, hour, min, sec, section, color, status]
     appendRow(newData)
 
     return color
+
+def sorted(color): # Update new sorted noodle to the csv
+    now = datetime.now()
+    year = now.date().year
+    month = now.date().month
+    day = now.date().day
+    #print(f'Date : {year} {month} {day}')
+    hour = now.time().hour
+    min = now.time().minute
+    sec = now.time().second
+    #print(f'Time : {hour} {min} {sec}') 
+
+    # Get factory section
+    section = 'Noodle Sorting'
+    status = 'Sorted'
+
+    # Update new data to the next row
+    newData = [year, month, day, hour, min, sec, section, color, status]
+    appendRow(newData)

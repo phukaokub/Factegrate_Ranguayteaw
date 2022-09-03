@@ -2,7 +2,7 @@ from datetime import datetime
 import time
 from time import sleep
 import datetime
-from turtle import color
+# from turtle import color
 import sim
 from urllib import response
 import requests
@@ -13,6 +13,7 @@ import urllib3
 http    = urllib3.PoolManager()
 delay = 0
 global num
+global color 
 color = ""
 
 def transferData(color) : # transfer data in API to CoppeliaSim
@@ -28,16 +29,17 @@ def getColorNewBox() : # Get color from Sensor #10
     global delay
     responseAPI = http.request("GET",
                               "http://localhost/tss/0/sensor/10")
-    color    = responseAPI.data.decode("utf-8")
-    parseJson = json.loads(color)
+    data    = responseAPI.data.decode("utf-8")
+    parseJson = json.loads(data)
 
-    # activeCase =  parseJson['value']
+    color =  parseJson['value']
     # delay = 1.055
     # transferData(activeCase)
     #print('Color : ',activeCase)
     return color
 
 def getDataFromAPI(num) : # Get position previous Box by Sensor #num
+    i=i%2
     global delay, color
     responseAPI = http.request("GET",
                               f"http://localhost/tss/0/sensor/{num}")
@@ -55,14 +57,17 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
         print(f'Sensor #{num} : {activeCase}')
         print(f'Color : {color}')
 
-        getLatency()
+        # getLatency()
         PostActuator.ActuatorByColor(color)
-        getLatency()
+        # getLatency()
 
+        generateDB.sorted(color)
         print('Finish!\n')
-        # time.sleep(0.5)
-
-    # time.sleep(1)
+        time.sleep(0.5)
+    if(i==1):
+        PostActuator.ActuatorGet()
+    i+=1
+    time.sleep(1)
 
 def getLatency(): # Check latency between API and TeleSort
     global delay
@@ -77,6 +82,7 @@ def getLatency(): # Check latency between API and TeleSort
 
 while(True):
     # print('Scanning...')
+    i=0
     getDataFromAPI(0)
     # time.sleep(delay)
 
