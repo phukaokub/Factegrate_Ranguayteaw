@@ -9,7 +9,7 @@ import requests
 import json
 import generateDB
 import urllib3
-http    = urllib3.PoolManager()
+http = urllib3.PoolManager()
 
 def ActuatorPushPull(num): #send actuator an act
     # Activete
