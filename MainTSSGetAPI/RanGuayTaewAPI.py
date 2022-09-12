@@ -50,6 +50,7 @@ def sendUserData(user, purple, green, red, blue, yellow, status):
         "yellow"    : yellow, 
         "status"    : status
     }
+    # print(data)
     data_json = json.dumps(data)
     response = http.request("POST", 
                             url+'/user',
@@ -97,9 +98,9 @@ def setOrderStatus(id, status):
 # print(getNumRowOfUserData())
 # print(getUserData())
 
-user, purple, green, red, blue, yellow, status = 'Pearl', 10, 0, 0, 23, 30, 'waiting'
-sendUserData(user, purple, green, red, blue, yellow, status)
-print(getUserData())
+# user, purple, green, red, blue, yellow, status = 'Pearl', 10, 0, 0, 23, 30, 'waiting'
+# sendUserData(user, purple, green, red, blue, yellow, status)
+# print(getUserData())
 
 # year, month, day, hour, min, sec, section, color, status = 2022, 8, 21, 15, 17, 39, 'Noodle Sorting', 'PURPLE', 'Sorted'
 # sendSortingSystemData(year, month, day, hour, min, sec, section, color, status)

@@ -27,6 +27,12 @@ app.get('/sorting-system/count', (request, response) => {
     response.json(info);
 });
 
+app.get('/sorting-system/sorted', (request, response) => { 
+    const statement = sort_DB.prepare(`SELECT rowid,* FROM sortingSystem WHERE status = 'Sorted'`);
+    const info = statement.all();
+    response.json(info);
+});
+
 // get data from TABLE user
 app.get('/user', (request, response) => { 
     const statement = user_db.prepare(`SELECT rowid,* FROM user`);

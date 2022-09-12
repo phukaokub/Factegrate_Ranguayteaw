@@ -1,17 +1,14 @@
-from datetime import datetime
 import time
 from time import sleep
-import datetime
-# from turtle import color
-import sim
-from urllib import response
 import json
-import generateDB
 import urllib3
 http = urllib3.PoolManager()
 
-def ActuatorPushPull(num): #send actuator an act
-    # Activete
+def TestActuatorPushPull(num): # for testing 
+    print(f'########\nActivate Actuator at Sensor #{num}')
+
+def ActuatorPushPull(num): # push and pull actuator
+    # Activate
     time.sleep(0.1)
     data_json = {"action" : 1}
     data_encode = json.dumps(data_json).encode("utf-8")
