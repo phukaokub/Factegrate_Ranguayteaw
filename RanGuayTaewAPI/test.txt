@@ -1,5 +1,4 @@
 {
-    "id"        : 2, 
     "year"      : 2021, 
     "month"     : 6, 
     "day"       : 19, 
@@ -16,15 +15,11 @@
 }
 
 {
-    "id"        : 2, 
     "user"      : "Phukao", 
-    "time"      : "16 PM",
-    "product"   : {
-        "purple"    : 1, 
-        "green"     : 0, 
-        "red"       : 0,
-        "blue"      : 5, 
-        "yellow"    : 6
-    }, 
+    "purple"    : 1, 
+    "green"     : 0, 
+    "red"       : 0,
+    "blue"      : 5, 
+    "yellow"    : 6
     "status"    : "waiting"
 }
