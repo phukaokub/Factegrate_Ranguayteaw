@@ -5,7 +5,6 @@ import datetime
 # from turtle import color
 import sim
 from urllib import response
-import requests
 import json
 import generateDB
 import urllib3

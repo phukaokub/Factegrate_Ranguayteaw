@@ -1,17 +1,11 @@
 from datetime import datetime
-from urllib import response
-import requests
 import json
 from csv import writer
 import urllib3
+import RanGuayTaewAPI
 http = urllib3.PoolManager()
 
-def appendRow(row): # Append data as a new row
-    with open('database.csv', 'a+', newline='') as write_obj:
-        csv_writer = writer(write_obj)
-        csv_writer.writerow(row)
-
-def getData(): # Get color from sensor 10
+def updateNewBox(): # Add new box to the database
     responseAPI = http.request("GET",
                               f"http://localhost/tss/0/sensor/10")
     data    = responseAPI.data.decode("utf-8")
@@ -35,13 +29,9 @@ def getData(): # Get color from sensor 10
     # Get factory section
     section = 'Noodle Sorting'
     status = 'Unsort'
-
-    # Update new data to the next row
-    newData = [year, month, day, hour, min, sec, section, color, status]
-    appendRow(newData)
-
-    return color
-
+    
+    # Update new box data to sortingSystem table
+    RanGuayTaewAPI.sendSortingSystemData(year, month, day, hour, min, sec, section, color, status)
 def sorted(color): # Update new sorted noodle to the csv
     now = datetime.now()
     year = now.date().year
@@ -57,6 +47,7 @@ def sorted(color): # Update new sorted noodle to the csv
     section = 'Noodle Sorting'
     status = 'Sorted'
 
-    # Update new data to the next row
-    newData = [year, month, day, hour, min, sec, section, color, status]
-    appendRow(newData)
+    # # Update new data to the next row
+    # newData = [year, month, day, hour, min, sec, section, color, status]
+    # appendRow(newData)
+

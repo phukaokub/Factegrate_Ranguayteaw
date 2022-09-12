@@ -7,10 +7,13 @@ url = "http://localhost:8080"
 def getUserData():
     response = http.request("GET", 
                             url+'/user')
-    parseJson = json.loads(response.data)
+    try:
+        parseJson = json.loads(response.data)
 
-    #print(parseJson[0]['user'])
-    return parseJson
+        #print(parseJson[0]['user'])
+        return parseJson
+    except:
+        print('no table')
 
 def getSortingSystemData():
     response = http.request("GET", 
@@ -20,9 +23,27 @@ def getSortingSystemData():
     #print(parseJson[0]['user'])
     return parseJson
 
-def sendUserData(id, user, time, purple, green, red, blue, yellow, status):
+def getNumRowOfUserData():
+    response = http.request("GET", 
+                            url+'/user/count')
+    try:
+        parseJson = json.loads(response.data)
+        num = parseJson[0]['COUNT(id)']
+        return num
+    except:
+        print('error')
+
+def getNumRowOfSortingSystemData():
+    response = http.request("GET", 
+                            url+'/sorting-system/count')
+    parseJson = json.loads(response.data)
+    num = parseJson[0]['COUNT(id)']
+    return num
+
+def sendUserData(user, time, purple, green, red, blue, yellow, status):
+    global userID
     data = {
-        "id"        : id, 
+        "id"        : userID, 
         "user"      : user, 
         "time"      : time,
         "purple"    : purple, 
@@ -37,11 +58,13 @@ def sendUserData(id, user, time, purple, green, red, blue, yellow, status):
                             url+'/user',
                             body=data_json,
                             headers={"content-Type" : "application/json"})
-    #print(json.loads(response.data)['lastInsertRowid'])
+    userID += 1
+    # print(json.loads(response.data)['lastInsertRowid'])
 
-def sendSortingSystemData(id, year, month, day, hour, min, sec, section, color, status):
+def sendSortingSystemData(year, month, day, hour, min, sec, section, color, status):
+    global sortSysID
     data = {
-        "id"        : id, 
+        "id"        : sortSysID, 
         "year"      : year, 
         "month"     : month, 
         "day"       : day, 
@@ -57,11 +80,42 @@ def sendSortingSystemData(id, year, month, day, hour, min, sec, section, color, 
                             url+'/sorting-system',
                             body=data_json,
                             headers={"content-Type" : "application/json"})
+    sortSysID += 1
 
-id, user, time, purple, green, red, blue, yellow, status = 14, 'Test', '16:00:01', 0, 5, 9, 13, 0, 'waiting'
-sendUserData(id, user, time, purple, green, red, blue, yellow, status)
-print(getUserData())
+def initID():
+    global userID, sortSysID
+    userID = getNumRowOfUserData() + 1
+    sortSysID = getNumRowOfSortingSystemData() + 1
 
-# id, year, month, day, hour, min, sec, section, color, status = 2, 2022, 6, 19, 12, 20, 3, 'Noodle Sorting', 'RED', 'Sorted'
-# sendSortingSystemData(id, year, month, day, hour, min, sec, section, color, status)
+def getNewOrder():
+    response = http.request("GET", 
+                            url+'/user/order')
+    try:
+        parseJson = json.loads(response.data)
+        # print(parseJson)
+        order = parseJson[0]
+        print(order['id'])
+        setOrderStatus(order['id'], 'in-progress')
+        return order
+    except: # if there is 0 row
+        return False
+    # return num
+
+def setOrderStatus(id, status):
+    response = http.request("POST", 
+                            url+'/user/order/'+str(id)+'/'+status)
+
+getNewOrder()
+print(getNumRowOfUserData())
+#print(getUserData())
+
+# initID()
+# user, time, purple, green, red, blue, yellow, status = 'Mek', '16:00:01', 10, 0, 0, 23, 30, 'waiting'
+# sendUserData(user, time, purple, green, red, blue, yellow, status)
+# print(getUserData())
+
+# year, month, day, hour, min, sec, section, color, status = 2022, 8, 21, 15, 17, 39, 'Noodle Sorting', 'PURPLE', 'Sorted'
+# sendSortingSystemData(year, month, day, hour, min, sec, section, color, status)
 # print(getSortingSystemData())
+
+

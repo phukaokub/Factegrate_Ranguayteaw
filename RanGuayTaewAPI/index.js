@@ -20,9 +20,23 @@ app.get('/sorting-system', (request, response) => {
     response.json(info);
 });
 
+// get number of rows from TABLE sortingSystem
+app.get('/sorting-system/count', (request, response) => { 
+    const statement = sort_DB.prepare(`SELECT COUNT(id) FROM sortingSystem`);
+    const info = statement.all();
+    response.json(info);
+});
+
 // get data from TABLE user
 app.get('/user', (request, response) => { 
     const statement = user_db.prepare(`SELECT * FROM user`);
+    const info = statement.all();
+    response.json(info);
+});
+
+// get number of rows from TABLE user
+app.get('/user/count', (request, response) => { 
+    const statement = user_db.prepare(`SELECT COUNT(id) FROM user`);
     const info = statement.all();
     response.json(info);
 });
@@ -85,4 +99,19 @@ app.delete("/user", (request, response) => {
         response.json(info);
     }
 
+});
+
+// get waiting order from TABLE user
+app.get('/user/order', (request, response) => { 
+    const statement = user_db.prepare(`SELECT * FROM user WHERE status = 'waiting'`);
+    const info = statement.all();
+    response.json(info);
+});
+
+// set new status of order for TABLE user
+app.post('/user/order/:id/:status', (request, response) => { 
+    const { id, status } = request.params;
+    const statement = user_db.prepare(`UPDATE user SET status = ? WHERE id = ?`);
+    const info = statement.run(status, id);
+    response.json(info);
 });
