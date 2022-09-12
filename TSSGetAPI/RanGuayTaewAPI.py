@@ -28,7 +28,7 @@ def getNumRowOfUserData():
                             url+'/user/count')
     try:
         parseJson = json.loads(response.data)
-        num = parseJson[0]['COUNT(id)']
+        num = parseJson[0]['COUNT(rowid)']
         return num
     except:
         print('error')
@@ -37,15 +37,12 @@ def getNumRowOfSortingSystemData():
     response = http.request("GET", 
                             url+'/sorting-system/count')
     parseJson = json.loads(response.data)
-    num = parseJson[0]['COUNT(id)']
+    num = parseJson[0]['COUNT(rowid)']
     return num
 
-def sendUserData(user, time, purple, green, red, blue, yellow, status):
-    global userID
+def sendUserData(user, purple, green, red, blue, yellow, status):
     data = {
-        "id"        : userID, 
         "user"      : user, 
-        "time"      : time,
         "purple"    : purple, 
         "green"     : green, 
         "red"       : red,
@@ -58,13 +55,10 @@ def sendUserData(user, time, purple, green, red, blue, yellow, status):
                             url+'/user',
                             body=data_json,
                             headers={"content-Type" : "application/json"})
-    userID += 1
     # print(json.loads(response.data)['lastInsertRowid'])
 
 def sendSortingSystemData(year, month, day, hour, min, sec, section, color, status):
-    global sortSysID
     data = {
-        "id"        : sortSysID, 
         "year"      : year, 
         "month"     : month, 
         "day"       : day, 
@@ -80,12 +74,6 @@ def sendSortingSystemData(year, month, day, hour, min, sec, section, color, stat
                             url+'/sorting-system',
                             body=data_json,
                             headers={"content-Type" : "application/json"})
-    sortSysID += 1
-
-def initID():
-    global userID, sortSysID
-    userID = getNumRowOfUserData() + 1
-    sortSysID = getNumRowOfSortingSystemData() + 1
 
 def getNewOrder():
     response = http.request("GET", 
@@ -94,8 +82,8 @@ def getNewOrder():
         parseJson = json.loads(response.data)
         # print(parseJson)
         order = parseJson[0]
-        print(order['id'])
-        setOrderStatus(order['id'], 'in-progress')
+        print(order['rowid'])
+        setOrderStatus(order['rowid'], 'in-progress')
         return order
     except: # if there is 0 row
         return False
@@ -105,17 +93,17 @@ def setOrderStatus(id, status):
     response = http.request("POST", 
                             url+'/user/order/'+str(id)+'/'+status)
 
-getNewOrder()
-print(getNumRowOfUserData())
-#print(getUserData())
-
-# initID()
-# user, time, purple, green, red, blue, yellow, status = 'Mek', '16:00:01', 10, 0, 0, 23, 30, 'waiting'
-# sendUserData(user, time, purple, green, red, blue, yellow, status)
+# getNewOrder()
+# print(getNumRowOfUserData())
 # print(getUserData())
+
+user, purple, green, red, blue, yellow, status = 'Pearl', 10, 0, 0, 23, 30, 'waiting'
+sendUserData(user, purple, green, red, blue, yellow, status)
+print(getUserData())
 
 # year, month, day, hour, min, sec, section, color, status = 2022, 8, 21, 15, 17, 39, 'Noodle Sorting', 'PURPLE', 'Sorted'
 # sendSortingSystemData(year, month, day, hour, min, sec, section, color, status)
 # print(getSortingSystemData())
+# print(getNumRowOfSortingSystemData())
 
 

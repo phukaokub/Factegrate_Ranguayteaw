@@ -15,55 +15,54 @@ app.listen(
 
 // get data from TABLE sortingSystem
 app.get('/sorting-system', (request, response) => { 
-    const statement = sort_DB.prepare(`SELECT * FROM sortingSystem`);
+    const statement = sort_DB.prepare(`SELECT rowid,* FROM sortingSystem`);
     const info = statement.all();
     response.json(info);
 });
 
 // get number of rows from TABLE sortingSystem
 app.get('/sorting-system/count', (request, response) => { 
-    const statement = sort_DB.prepare(`SELECT COUNT(id) FROM sortingSystem`);
+    const statement = sort_DB.prepare(`SELECT COUNT(rowid) FROM sortingSystem`);
     const info = statement.all();
     response.json(info);
 });
 
 // get data from TABLE user
 app.get('/user', (request, response) => { 
-    const statement = user_db.prepare(`SELECT * FROM user`);
+    const statement = user_db.prepare(`SELECT rowid,* FROM user`);
     const info = statement.all();
     response.json(info);
 });
 
 // get number of rows from TABLE user
 app.get('/user/count', (request, response) => { 
-    const statement = user_db.prepare(`SELECT COUNT(id) FROM user`);
+    const statement = user_db.prepare(`SELECT COUNT(rowid) FROM user`);
     const info = statement.all();
     response.json(info);
 });
 
 // insert new data TABLE sortingSystem
 app.post('/sorting-system', (request, response) => { 
-    const {id, year, month, day, hour, min, sec, section, color, status} = request.body;
+    const {year, month, day, hour, min, sec, section, color, status} = request.body;
 
     const statement = sort_DB.prepare(
-        "INSERT INTO sortingSystem (id, year, month, day, hour, min, sec, section, color, status) VALUES (?,?,?,?,?,?,?,?,?,?)"
+        "INSERT INTO sortingSystem (year, month, day, hour, min, sec, section, color, status) VALUES (?,?,?,?,?,?,?,?,?)"
     );
 
-    const info = statement.run(id, year, month, day, hour, min, sec, section, color, status); // go to ? = placeholder
+    const info = statement.run(year, month, day, hour, min, sec, section, color, status); // go to ? = placeholder
     response.json(info);
 });
 
 // insert new data TABLE user
 app.post('/user', (request, response) => { 
-    const {id, user, time, purple, green, red, blue, yellow, status} = request.body;
-    //console.log(request.body)
-    //console.log(id, user, time, purple, green, red, blue, yellow, status)
+    const {user, purple, green, red, blue, yellow, status} = request.body;
+    var time = getCurrentTime();
 
     const statement = user_db.prepare(
-        "INSERT INTO user (id, user, time, purple, green, red, blue, yellow, status) VALUES (?,?,?,?,?,?,?,?,?)"
+        "INSERT INTO user (user, time, purple, green, red, blue, yellow, status) VALUES (?,?,?,?,?,?,?,?)"
     );
 
-    const info = statement.run(id, user, time, purple, green, red, blue, yellow, status); // go to ? = placeholder
+    const info = statement.run(user, time, purple, green, red, blue, yellow, status); // go to ? = placeholder
     response.json(info);
 });
 
@@ -103,7 +102,7 @@ app.delete("/user", (request, response) => {
 
 // get waiting order from TABLE user
 app.get('/user/order', (request, response) => { 
-    const statement = user_db.prepare(`SELECT * FROM user WHERE status = 'waiting'`);
+    const statement = user_db.prepare(`SELECT rowid,* FROM user WHERE status = 'waiting'`);
     const info = statement.all();
     response.json(info);
 });
@@ -111,7 +110,19 @@ app.get('/user/order', (request, response) => {
 // set new status of order for TABLE user
 app.post('/user/order/:id/:status', (request, response) => { 
     const { id, status } = request.params;
-    const statement = user_db.prepare(`UPDATE user SET status = ? WHERE id = ?`);
+    const statement = user_db.prepare(`UPDATE user SET status = ? WHERE rowid = ?`);
     const info = statement.run(status, id);
     response.json(info);
 });
+
+// get time
+function getCurrentTime() {
+    var currentdate = new Date(); 
+    var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+    return datetime;
+};
