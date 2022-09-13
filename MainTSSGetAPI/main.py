@@ -3,7 +3,6 @@ from time import sleep
 import sim
 from datetime import datetime
 import json
-import actuatorControl
 import urllib3
 import RanGuayTaewAPI
 http = urllib3.PoolManager()
@@ -58,6 +57,37 @@ def updateNewBox(color, status): # Add new box to the database
     # Update new box data to sortingSystem table
     RanGuayTaewAPI.sendSortingSystemData(year, month, day, hour, min, sec, section, color, status)
 
+def ActuatorPushPull(num, delay): # push and pull actuator
+    # Activate
+    time.sleep(delay)
+    data_json = {"action" : 1}
+    data_encode = json.dumps(data_json).encode("utf-8")
+    ts = time.time()
+    res = http.request("Post",
+                        f"http://localhost/tss/0/actuator/{num}",
+                        body=data_encode,
+                        headers={"content-Type" : "application/json"})
+    #text = res.data.decode("utf-8")
+    #print(text)
+    afterPost1 = time.time() - ts
+    print(f'Activate Actuator at Sensor #{num} Time = {afterPost1}')
+    sleep(0.35)
+      
+    # Deactivate
+    data_json = {"action" : 0}     
+    data_encode = json.dumps(data_json).encode("utf-8")
+    ts = time.time()
+    res = http.request("POST",
+                            f"http://localhost/tss/0/actuator/{num}",
+                            body=data_encode,
+                            headers={"Content-Type" : "application/json"})
+    
+    #text    = res.data.decode("utf-8")
+    #print(text)
+    afterPost2 = time.time() - ts
+    print(f'Deactivate Actuator at Sensor #{num} Time = {afterPost2}')
+    sleep(0.2)
+
 def getDataFromAPI(num) : # Get position previous Box by Sensor #num
     global delay, haveOrder
     responseAPI = http.request("GET",
@@ -90,10 +120,11 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
         else:
             # push actuator number 2
             ts = time.time()
-            actuatorControl.ActuatorPushPull(2, 1.7)
+            # ActuatorPushPull(2, 2.5)
+            ActuatorPushPull(0, 0)
             afterAct = time.time() - ts
             print(f'Time Used: {afterAct}')
-            # actuatorControl.TestActuatorPushPull(2)
+            # TestActuatorPushPull(2)
             status = 'Unsorted'
 
         # update database
@@ -112,7 +143,10 @@ def genTSS(): # generate fake TSS API data
         color = ''
     return activeCase, color
 
-c = 0
+def TestActuatorPushPull(num): # for testing 
+    print(f'########\nActivate Actuator at Sensor #{num}')
+# c = 0
+
 printCheck = False
 
 while(True):
@@ -144,5 +178,5 @@ while(True):
     # get new box
     # getDataFromAPI(0, activeCase, color)
     getDataFromAPI(0)
-    c += 1
+    # c += 1
 
