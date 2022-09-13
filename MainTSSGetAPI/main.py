@@ -58,17 +58,17 @@ def updateNewBox(color, status): # Add new box to the database
     # Update new box data to sortingSystem table
     RanGuayTaewAPI.sendSortingSystemData(year, month, day, hour, min, sec, section, color, status)
 
-def getDataFromAPI(num, activeCase, color) : # Get position previous Box by Sensor #num
+def getDataFromAPI(num) : # Get position previous Box by Sensor #num
     global delay, haveOrder
-    # responseAPI = http.request("GET",
-    #                           f"http://localhost/tss/0/sensor/{num}")
-    # data    = responseAPI.data.decode("utf-8")
-    # parseJson = json.loads(data)
+    responseAPI = http.request("GET",
+                              f"http://localhost/tss/0/sensor/{num}")
+    data    = responseAPI.data.decode("utf-8")
+    parseJson = json.loads(data)
 
-    # activeCase =  parseJson['value']
+    activeCase =  parseJson['value']
     
     if(activeCase == 1) : # If sensor detected --> insert new box
-        # color = getColorNewBox()
+        color = getColorNewBox()
         # transferData(color) # send data to simulator
 
         print(f'Delay : {delay}')
@@ -89,8 +89,11 @@ def getDataFromAPI(num, activeCase, color) : # Get position previous Box by Sens
             status = 'Sorted'
         else:
             # push actuator number 2
-            # actuatorControl.ActuatorPushPull(2)
-            actuatorControl.TestActuatorPushPull(2)
+            ts = time.time()
+            actuatorControl.ActuatorPushPull(2, 1.7)
+            afterAct = time.time() - ts
+            print(f'Time Used: {afterAct}')
+            # actuatorControl.TestActuatorPushPull(2)
             status = 'Unsorted'
 
         # update database
@@ -115,16 +118,16 @@ printCheck = False
 while(True):
     ########################################################
     # generate fake data & insert new data
-    activeCase, color = genTSS()
-    if (c < 10): print('waiting... ' + str(c))
-    if (c == 10):
-        RanGuayTaewAPI.sendUserData('Phukao', 0, 3, 2, 0, 0, 'waiting')
-        print(RanGuayTaewAPI.getUserData())
-        printCheck = True
-    if (c == 20):
-        RanGuayTaewAPI.sendUserData('Tin', 1, 0, 2, 3, 0, 'waiting')
-        print(RanGuayTaewAPI.getUserData())
-        printCheck = True
+    # activeCase, color = genTSS()
+    # if (c < 10): print('waiting... ' + str(c))
+    # if (c == 10):
+    #     RanGuayTaewAPI.sendUserData('Phukao', 0, 3, 2, 0, 0, 'waiting')
+    #     print(RanGuayTaewAPI.getUserData())
+    #     printCheck = True
+    # if (c == 20):
+    #     RanGuayTaewAPI.sendUserData('Tin', 1, 0, 2, 3, 0, 'waiting')
+    #     print(RanGuayTaewAPI.getUserData())
+    #     printCheck = True
     ########################################################
 
     if (not haveOrder): # check for new order
@@ -139,6 +142,7 @@ while(True):
         haveOrder = True
 
     # get new box
-    getDataFromAPI(0, activeCase, color)
+    # getDataFromAPI(0, activeCase, color)
+    getDataFromAPI(0)
     c += 1
 

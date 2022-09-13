@@ -121,7 +121,7 @@ app.post('/user/order/:id/:status', (request, response) => {
     response.json(info);
 });
 
-// get time
+// get current time
 function getCurrentTime() {
     var currentdate = new Date(); 
     var datetime = currentdate.getDate() + "/"
