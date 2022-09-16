@@ -20,7 +20,7 @@ def getLatency(): # Check latency between API and TeleSort
     unit = parseJson['unit']
     print(f'Latency = {latency} {unit}')
 
-def transferData(color) : # transfer data in API to CoppeliaSim
+def transferData(color) : # transfer Box colors data in API to CoppeliaSim
     sim.simxFinish(-1)
     clientID = sim.simxStart('127.0.0.1',19997,True,True,5000,5)
     inputInts = []
@@ -28,6 +28,33 @@ def transferData(color) : # transfer data in API to CoppeliaSim
     inputStrings = color
     inputBuffer = bytearray()
     res,retInts,retFloats,retStrings,retBuffer = sim.simxCallScriptFunction(clientID,'ConveyorBelt',sim.sim_scripttype_childscript,'fromPython',inputInts,inputFloats,inputStrings,inputBuffer,sim.simx_opmode_blocking)
+
+def notHaveOrder() : # transfer data not have new order to CoppeliaSim
+    sim.simxFinish(-1)
+    clientID = sim.simxStart('127.0.0.1',19997,True,True,5000,5)
+    inputInts = []
+    inputFloats = []
+    inputStrings = ""
+    inputBuffer = bytearray()
+    res,retInts,retFloats,retStrings,retBuffer = sim.simxCallScriptFunction(clientID,'ConveyorBelt',sim.sim_scripttype_childscript,'NotOrder',inputInts,inputFloats,inputStrings,inputBuffer,sim.simx_opmode_blocking)
+
+def createNewOrder(color) : # transfer data not have new order to CoppeliaSim
+    sim.simxFinish(-1)
+    clientID = sim.simxStart('127.0.0.1',19997,True,True,5000,5)
+    inputInts = []
+    inputFloats = []
+    inputStrings = color
+    inputBuffer = bytearray()
+    res,retInts,retFloats,retStrings,retBuffer = sim.simxCallScriptFunction(clientID,'ConveyorBelt',sim.sim_scripttype_childscript,'Order',inputInts,inputFloats,inputStrings,inputBuffer,sim.simx_opmode_blocking)
+
+def setDefaultActSim(color) : # transfer data not have new order to CoppeliaSim
+    sim.simxFinish(-1)
+    clientID = sim.simxStart('127.0.0.1',19997,True,True,5000,5)
+    inputInts = []
+    inputFloats = []
+    inputStrings = color
+    inputBuffer = bytearray()
+    res,retInts,retFloats,retStrings,retBuffer = sim.simxCallScriptFunction(clientID,'ConveyorBelt',sim.sim_scripttype_childscript,'SetDefaultBoolList',inputInts,inputFloats,inputStrings,inputBuffer,sim.simx_opmode_blocking)
 
 def getColorNewBox() : # Get color from Sensor #10
     global delay
@@ -89,7 +116,7 @@ def ActuatorPushPull(num, delay): # push and pull actuator
     sleep(0.2)
 
 def getDataFromAPI(num) : # Get position previous Box by Sensor #num
-    global delay, haveOrder
+    global delay, delayPerRound, haveOrder
     responseAPI = http.request("GET",
                               f"http://localhost/tss/0/sensor/{num}")
     data    = responseAPI.data.decode("utf-8")
@@ -99,12 +126,10 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
     
     if(activeCase == 1) : # If sensor detected --> insert new box
         color = getColorNewBox()
-        transferData(color)
 
         # if color is not valid
         if (not (color.lower() in ['purple', 'green', 'red', 'blue', 'yellow'])):
             return 0
-        # transferData(color) # send data to simulator
 
         print(f'Delay : {delay}')
         print(f'Sensor #{num} : {activeCase}')
@@ -114,11 +139,21 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
         # check if there is order AND current color is required
         if (haveOrder and currentOrder[color.lower()] > 0):
             # don't push
+            createNewOrder(color)
+            
             currentOrder[color.lower()] -= 1
-            requiredBox = currentOrder['purple'] + currentOrder['green']  + currentOrder['red'] + currentOrder['blue'] + currentOrder['yellow']
-            print(f'>>>>>>>> Require : {requiredBox}')
+            requiredBoxPurple = currentOrder['purple'] 
+            requiredBoxGreen = currentOrder['green']
+            requiredBoxRed = currentOrder['red']
+            requiredBoxBlue =  currentOrder['blue']
+            requiredBoxYellow = currentOrder['yellow']
+            requiredBox = requiredBoxGreen + requiredBoxPurple + requiredBoxBlue + requiredBoxRed + requiredBoxYellow
+            print(f'>>>>>>>> Require <<<<<<<< \n Purple : {requiredBoxPurple} \n Green : {requiredBoxGreen} \n Red : {requiredBoxRed} \n Blue : {requiredBoxBlue} \n Yellow : {requiredBoxYellow}')
+            
+
             if (requiredBox == 0): # if all color is sorted > set success & get new order
                 haveOrder = False
+                notHaveOrder() # reset box data in simulator
                 RanGuayTaewAPI.setOrderStatus(currentOrder['rowid'], 'success')
             
             status = 'Sorted'
@@ -126,18 +161,20 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
             # push actuator number 2
             ts = time.time()
             # ActuatorPushPull(2, 2.5)
-            ActuatorPushPull(0, 0)
+            #ActuatorPushPull(1, 0.5)
             afterAct = time.time() - ts
             print(f'Time Used: {afterAct}')
             # TestActuatorPushPull(2)
             status = 'Unsorted'
 
+        transferData(color) # send data to simulator
+        setDefaultActSim(color)
         # update database
         updateNewBox(color, status)
 
         print('Finish!\n')
 
-    time.sleep(0.5)
+    time.sleep(0.25)
 
 def genTSS(): # generate fake TSS API data
     import random
@@ -184,3 +221,4 @@ while(True):
     # getDataFromAPI(0, activeCase, color)
     getDataFromAPI(0)
     # c += 1
+
