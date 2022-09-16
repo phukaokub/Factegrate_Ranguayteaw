@@ -99,6 +99,7 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
     
     if(activeCase == 1) : # If sensor detected --> insert new box
         color = getColorNewBox()
+        transferData(color)
 
         # if color is not valid
         if (not (color.lower() in ['purple', 'green', 'red', 'blue', 'yellow'])):
@@ -183,4 +184,3 @@ while(True):
     # getDataFromAPI(0, activeCase, color)
     getDataFromAPI(0)
     # c += 1
-
