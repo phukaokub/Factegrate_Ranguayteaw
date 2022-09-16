@@ -99,6 +99,10 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
     
     if(activeCase == 1) : # If sensor detected --> insert new box
         color = getColorNewBox()
+
+        # if color is not valid
+        if (not (color.lower() in ['purple', 'green', 'red', 'blue', 'yellow'])):
+            return 0
         # transferData(color) # send data to simulator
 
         print(f'Delay : {delay}')
