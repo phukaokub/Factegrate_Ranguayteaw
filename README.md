@@ -11,15 +11,18 @@ Created for [Metaverse For Smart Factory Contest 2022](https://smartfactory.hcil
 * [Setup](#setup)
 
 ## Team Members
-- [Teerawat chuaphanngam](https://github.com/phukaokub) : Frontend Developer 
+- [Teerawat chuaphanngam](https://github.com/phukaokub) : Frontend Developer & UX/UI designer & QA Tester
   - create a responsive web application for user
+  - design a web apllication
+  - Design a test scenarios for web application usability
 - [Piyawach Muensri](https://github.com/FireCrackerX) : Backend Developer & Simulation Designer
   - create APIs for IoT
   - create production line simulation
 - [Krittin Thirasak](https://github.com/krittintrs) : Backend Developer 
   - create APIs for database, IoT, and website
   - implement main logic for controlling the production line  
-- 
+- [Thouchapong Sangthawon]
+  - create a data table for product display. 
 
 ## General info
 Created with Python & JavaScript
