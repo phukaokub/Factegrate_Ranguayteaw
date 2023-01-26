@@ -1,4 +1,4 @@
-# Factegrate by RanGuayTaew team
+# Factegrate by RanGuayTeaw team
 A web application developed for controlling the production line of factory virtually <br />
 Using concept of digital twin, integrated with simulation and IoT <br /> 
 Created for [Metaverse For Smart Factory Contest 2022](https://smartfactory.hcilab.net/2022/09/22/%e0%b8%9c%e0%b8%a5%e0%b8%81%e0%b8%b2%e0%b8%a3%e0%b9%81%e0%b8%82%e0%b9%88%e0%b8%87%e0%b8%82%e0%b8%b1%e0%b8%99-metaverse-for-smart-factory-contest-2022/?fbclid=IwAR3097okwehSnQNtr3hrOl-aQSn46VnrKpta3TG6Xcrtuj3ZmPd6akyFDeI)
