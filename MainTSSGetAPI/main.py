@@ -161,7 +161,7 @@ def getDataFromAPI(num) : # Get position previous Box by Sensor #num
             # push actuator number 2
             ts = time.time()
             # ActuatorPushPull(2, 2.5)
-            #ActuatorPushPull(1, 0.5)
+            ActuatorPushPull(1, 1.2)
             afterAct = time.time() - ts
             print(f'Time Used: {afterAct}')
             # TestActuatorPushPull(2)
